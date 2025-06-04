@@ -1,0 +1,9 @@
+﻿@model IEnumerable<ARIBApp.Core.Contracts.TaskDTO>
+@{
+    ViewData["Title"] = $"Tasks for {ViewBag.Employee.FullName}";
+    Layout = "_EmployeeLayout";
+}
+
+<div id="employee-tasks-container">
+    @await Html.PartialAsync("_EmployeeTasks", Model)
+</div>

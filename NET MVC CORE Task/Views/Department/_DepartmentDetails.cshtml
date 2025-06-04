@@ -1,0 +1,84 @@
+﻿ @model ARIBApp.Core.Contracts.DepartmentDTO
+
+<div class="department-details">
+    <div class="row mb-4">
+        <div class="col-md-3 text-center">
+            <div class="bg-primary text-white rounded-circle d-flex align-items-center justify-content-center mx-auto" style="width:150px;height:150px; font-size: 64px;">
+                <i class="bi bi-building"></i>
+            </div>
+        </div>
+        <div class="col-md-9">
+            <h3 class="mb-3">@Model.Name</h3>
+            <div class="row">
+                <div class="col-md-6">
+                    <p><strong>Department ID:</strong> @Model.Id</p>
+                    <p><strong>Number of Employees:</strong> @Model.Employees.Count</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    @if (Model.Employees != null && Model.Employees.Any())
+    {
+        <div class="card mt-4">
+            <div class="card-header bg-primary">
+                <h5 class="mb-0 ">Employees in Department</h5>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-sm table-hover">
+                        <thead>
+                            <tr>
+                                <th>Name</th>
+                                <th>Email</th>
+                                <th>Manager</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var employee in Model.Employees)
+                            {
+                                <tr>
+                                    <td>
+                                        <div class="d-flex align-items-center">
+                                            @if (!string.IsNullOrEmpty(employee.ImagePath))
+                                            {
+                                                <img src="@employee.ImagePath" class="rounded-circle me-2" width="32" height="32" alt="@employee.FullName" style="object-fit: cover;">
+                                            }
+                                            else
+                                            {
+                                                <div class="avatar bg-primary text-white rounded-circle me-2 d-flex align-items-center justify-content-center" style="width:32px;height:32px;">
+                                                    @employee.FirstName.Substring(0, 1)@employee.LastName.Substring(0, 1)
+                                                </div>
+                                            }
+                                            <span>@employee.FullName</span>
+                                        </div>
+                                    </td>
+                                    <td>@employee.Email</td>
+                                    <td>@(employee.Manager?.FullName ?? "N/A")</td>
+                                    <td>
+                                        <a asp-controller="Employee" asp-action="Details" asp-route-id="@employee.Id" class="btn btn-sm btn-info" data-ajax="true" data-target="#main-content">
+                                            <i class="bi bi-info-circle"></i>
+                                        </a>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    }
+
+    <div class="mt-4">
+        @if (User.IsInRole("Admin"))
+        {
+            <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-primary" data-ajax="true" data-target="#main-content">
+                <i class="bi bi-pencil me-1"></i> Edit
+            </a>
+        }
+        <a asp-action="Index" class="btn btn-secondary" data-ajax="true" data-target="#main-content">
+            <i class="bi bi-arrow-left me-1"></i> Back to List
+        </a>
+    </div>
+</div>

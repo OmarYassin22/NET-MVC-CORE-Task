@@ -1,0 +1,9 @@
+﻿ @model ARIBApp.Core.Contracts.DepartmentDTO
+@{
+    ViewData["Title"] = "Department Details";
+    Layout = "_EmployeeLayout";
+}
+
+<div id="department-details-container">
+    @await Html.PartialAsync("_DepartmentDetails", Model)
+</div>

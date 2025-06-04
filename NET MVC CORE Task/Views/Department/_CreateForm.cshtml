@@ -1,0 +1,238 @@
+﻿@model ARIBApp.Core.Contracts.EmployeeDTO
+
+<form asp-action="Create" method="post" enctype="multipart/form-data" data-ajax="true">
+    <div id="form-alert-container">
+        @if (!ViewContext.ModelState.IsValid)
+        {
+            <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                <h5 class="alert-heading">
+                    <i class="bi bi-exclamation-triangle-fill me-2"></i>
+                    Please correct the errors below:
+                </h5>
+                <ul class="mb-0 mt-2">
+                    @foreach (var modelState in ViewContext.ModelState.Values)
+                    {
+                        foreach (var error in modelState.Errors)
+                        {
+                            <li>@error.ErrorMessage</li>
+                        }
+                    }
+                </ul>
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        }
+    </div>
+
+    <div class="row">
+        <div class="col-md-6">
+            <div class="mb-3">
+                <label asp-for="FirstName" class="form-label">First Name</label>
+                <input asp-for="FirstName" class="form-control" />
+                <span asp-validation-for="FirstName" class="text-danger"></span>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="mb-3">
+                <label asp-for="LastName" class="form-label">Last Name</label>
+                <input asp-for="LastName" class="form-control" />
+                <span asp-validation-for="LastName" class="text-danger"></span>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-6">
+            <div class="mb-3">
+                <label asp-for="Email" class="form-label">Email</label>
+                <input asp-for="Email" class="form-control" />
+                <span asp-validation-for="Email" class="text-danger"></span>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="mb-3">
+                <label asp-for="UserName" class="form-label">Username</label>
+                <input asp-for="UserName" class="form-control" />
+                <span asp-validation-for="UserName" class="text-danger"></span>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-6">
+            <div class="mb-3">
+                <label for="password" class="form-label">Password</label>
+                <input type="password" id="password" name="password" class="form-control" required />
+                <div class="form-text">Password must be at least 8 characters with letters, numbers and special characters.</div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="mb-3">
+                <label for="imageFile" class="form-label">Profile Image</label>
+                <input type="file" id="imageFile" name="imageFile" class="form-control" accept="image/*" />
+                <div class="form-text">Upload a profile image (optional). Max size: 2MB.</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-6">
+            <div class="mb-3">
+                <label asp-for="DepartmentId" class="form-label">Department</label>
+                <select asp-for="DepartmentId" class="form-select">
+                    <option value="">-- Select Department --</option>
+                    @if (ViewBag.Departments != null)
+                    {
+                        @foreach (var dept in ViewBag.Departments)
+                        {
+                            <option value="@dept.Id">@dept.Name</option>
+                        }
+                    }
+                </select>
+                <span asp-validation-for="DepartmentId" class="text-danger"></span>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="mb-3">
+                <label asp-for="ManagerId" class="form-label">Manager</label>
+                <select asp-for="ManagerId" class="form-select">
+                    <option value="">-- No Manager --</option>
+                    @if (ViewBag.Managers != null)
+                    {
+                        @foreach (var manager in ViewBag.Managers)
+                        {
+                            <option value="@manager.Id">@manager.FullName</option>
+                        }
+                    }
+                </select>
+                <span asp-validation-for="ManagerId" class="text-danger"></span>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-6">
+            <div class="mb-3">
+                <label asp-for="Salary" class="form-label">Salary</label>
+                <input asp-for="Salary" class="form-control" />
+                <span asp-validation-for="Salary" class="text-danger"></span>
+            </div>
+        </div>
+    </div>
+
+    <div class="mt-3">
+        <button type="submit" class="btn btn-primary">
+            <i class="bi bi-save me-1"></i> Create Employee
+        </button>
+        <a asp-action="Index" class="btn btn-secondary" data-ajax="true" data-target="#main-content">
+            <i class="bi bi-arrow-left me-1"></i> Back to List
+        </a>
+    </div>
+</form>
+
+<script>
+    document.querySelector('form[data-ajax="true"]').addEventListener('submit', function(e) {
+        e.preventDefault();
+
+        document.getElementById('ajax-loading').style.display = 'block';
+
+        const formData = new FormData(this);
+
+        fetch('@Url.Action("Create")', {
+            method: 'POST',
+            body: formData,
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest'
+            }
+        })
+        .then(response => {
+            // Check response status before parsing the JSON
+            if (!response.ok) {
+                // Store the status code to use in the error message
+                const statusCode = response.status;
+                // Clone the response so we can still read the body
+                return response.json().then(errorData => {
+                    // Add the status code to the error data
+                    return {
+                        success: false,
+                        isHttpError: true,
+                        statusCode: statusCode,
+                        message: errorData.message || `Server returned error status: ${statusCode}`,
+                        errors: errorData.errors || []
+                    };
+                }).catch(() => {
+                    // If we can't parse JSON, return a generic error
+                    return {
+                        success: false,
+                        isHttpError: true,
+                        statusCode: statusCode,
+                        message: `Server returned error status: ${statusCode}`,
+                        errors: []
+                    };
+                });
+            }
+            // Regular JSON parsing for successful responses
+            return response.json();
+        })
+        .then(data => {
+            document.getElementById('ajax-loading').style.display = 'none';
+
+            if (data.success) {
+                document.getElementById('successToastBody').textContent = data.message;
+                var successToast = new bootstrap.Toast(document.getElementById('successToast'));
+                successToast.show();
+
+                if (data.redirectUrl) {
+                    AjaxHandler.loadContent(data.redirectUrl, '#main-content');
+                }
+            } else {
+                const alertContainer = document.getElementById('form-alert-container');
+                let alertHtml = `
+                    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                        <h5 class="alert-heading">
+                            <i class="bi bi-exclamation-triangle-fill me-2"></i>
+                            ${data.isHttpError ? `Error (Status ${data.statusCode}): ${data.message}` : data.message}
+                        </h5>`;
+
+                if (data.errors && data.errors.length > 0) {
+                    alertHtml += '<ul class="mb-0 mt-2">';
+                    data.errors.forEach(error => {
+                        alertHtml += `<li>${error}</li>`;
+                    });
+                    alertHtml += '</ul>';
+                }
+
+                alertHtml += `<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>`;
+
+                alertContainer.innerHTML = alertHtml;
+
+                // Scroll to the error message
+                alertContainer.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }
+        })
+        .catch(error => {
+            document.getElementById('ajax-loading').style.display = 'none';
+
+            // Show an error in the form's alert container
+            const alertContainer = document.getElementById('form-alert-container');
+            let alertHtml = `
+                <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                    <h5 class="alert-heading">
+                        <i class="bi bi-exclamation-triangle-fill me-2"></i>
+                        Network Error
+                    </h5>
+                    <p>An error occurred while processing your request: ${error.message}</p>
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>`;
+            alertContainer.innerHTML = alertHtml;
+
+            // Also show in the toast for consistency
+            document.getElementById('errorToastBody').textContent = "An error occurred while processing your request.";
+            var errorToast = new bootstrap.Toast(document.getElementById('errorToast'));
+            errorToast.show();
+
+            // Scroll to the error
+            alertContainer.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        });
+    });
+</script>

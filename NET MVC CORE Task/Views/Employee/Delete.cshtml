@@ -1,0 +1,76 @@
+@using ARIBApp.Core.Contracts
+@model EmployeeDTO
+@{
+    ViewData["Title"] = "Delete Employee";
+    Layout = "_EmployeeLayout";
+}
+
+<div class="alert alert-danger mb-4">
+    <h4 class="alert-heading"><i class="bi bi-exclamation-triangle-fill"></i> Warning!</h4>
+    <p>Are you sure you want to delete this employee? This action cannot be undone.</p>
+</div>
+
+<div class="row">
+    <div class="col-md-4">
+        <div class="card mb-4">
+            <div class="card-body text-center">
+                @if (!string.IsNullOrEmpty(Model.ImagePath))
+                {
+                    <img src="@Model.ImagePath" alt="@Model.FullName" class="img-fluid rounded-circle mb-3" style="width: 150px; height: 150px; object-fit: cover;">
+                }
+                else
+                {
+                    <div class="rounded-circle bg-secondary text-white d-flex align-items-center justify-content-center mx-auto mb-3" style="width: 150px; height: 150px; font-size: 40px;">
+                        @((!string.IsNullOrEmpty(Model.FirstName) && Model.FirstName.Length > 0 ? Model.FirstName[0].ToString() : "") + 
+                          (!string.IsNullOrEmpty(Model.LastName) && Model.LastName.Length > 0 ? Model.LastName[0].ToString() : ""))
+                    </div>
+                }
+                <h5 class="card-title">@Model.FullName</h5>
+                <p class="text-muted">@Model.Department.Name</p>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-8">
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5>Employee Information</h5>
+            </div>
+            <div class="card-body">
+                <dl class="row">
+                    <dt class="col-sm-3">ID</dt>
+                    <dd class="col-sm-9">@Model.Id</dd>
+                    
+                    <dt class="col-sm-3">Name</dt>
+                    <dd class="col-sm-9">@Model.FullName</dd>
+                    
+                    <dt class="col-sm-3">Salary</dt>
+                    <dd class="col-sm-9">$@Model.Salary.ToString("N2")</dd>
+                    
+                    <dt class="col-sm-3">Department</dt>
+                    <dd class="col-sm-9">@Model.Department.Name</dd>
+                    
+                    @if (Model.Employees.Any())
+                    {
+                        <dt class="col-sm-3">Subordinates</dt>
+                        <dd class="col-sm-9 text-danger">
+                            <strong>@Model.Employees.Count</strong> - These employees will need to be reassigned
+                        </dd>
+                    }
+                </dl>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="d-flex justify-content-between mt-4">
+    <a asp-action="Details" asp-route-id="@Model.Id" class="btn btn-secondary">
+        <i class="bi bi-arrow-left"></i> Back to Details
+    </a>
+    <form asp-action="Delete" method="post">
+        <input type="hidden" name="id" value="@Model.Id" />
+        <button type="submit" class="btn btn-danger">
+            <i class="bi bi-trash"></i> Confirm Delete
+        </button>
+    </form>
+</div>

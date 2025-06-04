@@ -1,0 +1,81 @@
+﻿@model ARIBApp.Core.Contracts.LoginDTO
+@{
+    ViewData["Title"] = "Login";
+}
+
+<div class="row justify-content-center mt-5">
+    <div class="col-md-6 col-lg-4">
+        <div class="card shadow">
+            <div class="card-header bg-primary text-white text-center">
+                <h3 class="mb-0">Login</h3>
+            </div>
+            <div class="card-body">
+                <form id="loginForm" method="post">
+                    <div class="alert alert-danger d-none" id="loginError" role="alert">
+                        Invalid login attempt. Please check your credentials.
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="username" class="form-label">Username</label>
+                        <div class="input-group">
+                            <span class="input-group-text"><i class="bi bi-person"></i></span>
+                            <input type="text" class="form-control" id="username" name="Username" placeholder="Enter your username" required>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="password" class="form-label">Password</label>
+                        <div class="input-group">
+                            <span class="input-group-text"><i class="bi bi-lock"></i></span>
+                            <input type="password" class="form-control" id="password" name="Password" placeholder="Enter your password" required>
+                        </div>
+                    </div>
+
+                    <div class="d-grid gap-2">
+                        <button type="submit" class="btn btn-primary" id="loginButton">
+                            <span class="spinner-border spinner-border-sm d-none" role="status" aria-hidden="true" id="loginSpinner"></span>
+                            Login
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        $(document).ready(function() {
+            $("#loginForm").submit(function(e) {
+                e.preventDefault();
+
+                 $("#loginButton").attr("disabled", true);
+                $("#loginSpinner").removeClass("d-none");
+                $("#loginError").addClass("d-none");
+
+                $.ajax({
+                    url: '@Url.Action("Login", "Auth")',
+                    type: 'POST',
+                    data: {
+                        Username: $("#username").val(),
+                        Password: $("#password").val()
+                    },
+                    success: function(response) {
+                        if (response.success) {
+                            window.location.href = '@Url.Action("Index", "Employee")';
+                        } else {
+                            $("#loginError").removeClass("d-none").text(response.message || "Invalid login attempt");
+                            $("#loginButton").removeAttr("disabled");
+                            $("#loginSpinner").addClass("d-none");
+                        }
+                    },
+                    error: function() {
+                        $("#loginError").removeClass("d-none");
+                        $("#loginButton").removeAttr("disabled");
+                        $("#loginSpinner").addClass("d-none");
+                    }
+                });
+            });
+        });
+    </script>
+}

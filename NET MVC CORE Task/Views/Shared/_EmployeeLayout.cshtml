@@ -1,0 +1,525 @@
+@using Microsoft.AspNetCore.Identity
+@inject UserManager<ARIBApp.Data.Model.Employee> UserManager
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - HR Management Portal</title>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/NET_MVC_CORE_Task.styles.css" asp-append-version="true" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <style>
+    :root {
+        --primary-color: #3f51b5;
+        --secondary-color: #f50057;
+        --primary-light: #e8eaf6;
+        --sidebar-color: #f8f9fa;
+        --accent-color: #ff4081;
+        --success-color: #4caf50;
+        --warning-color: #ff9800;
+        --danger-color: #f44336;
+        --dark-color: #37474f;
+    }
+
+    body {
+        font-family: 'Roboto', sans-serif;
+        background-color: #f5f7fa;
+        color: #333;
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .navbar-brand {
+        font-weight: 700;
+        color: var(--primary-color) !important;
+    }
+    
+    .navbar {
+        box-shadow: 0 2px 4px rgba(0,0,0,.1);
+        background-color: white !important;
+        padding: 0.75rem 1rem;
+    }
+    
+    .navbar .nav-item .nav-link {
+        color: #555;
+        font-weight: 500;
+        padding: 0.5rem 1rem;
+        border-radius: 4px;
+        transition: all 0.3s;
+    }
+    
+    .navbar .nav-item .nav-link:hover {
+        background-color: var(--primary-light);
+        color: var(--primary-color);
+    }
+    
+    .dropdown-menu {
+        box-shadow: 0 2px 10px rgba(0,0,0,.1);
+        border: none;
+        border-radius: 8px;
+    }
+    
+    .dropdown-item {
+        padding: 0.5rem 1.5rem;
+        transition: all 0.2s;
+    }
+    
+    .dropdown-item:hover {
+        background-color: var(--primary-light);
+        color: var(--primary-color);
+    }
+    
+    .list-group-item {
+        border-radius: 8px !important;
+        margin-bottom: 5px;
+        border: 1px solid #eee;
+        transition: all 0.3s;
+    }
+    
+    .list-group-item:hover {
+        background-color: var(--primary-light);
+        color: var(--primary-color);
+        transform: translateY(-2px);
+    }
+    
+    .list-group-item.active {
+        background-color: var(--primary-color);
+        border-color: var(--primary-color);
+    }
+    
+    .card {
+        border: none;
+        border-radius: 12px;
+        box-shadow: 0 4px 6px rgba(0,0,0,.04);
+        overflow: hidden;
+    }
+    
+    .card-header {
+        background-color: var(--primary-color);
+        color: white;
+        padding: 1rem 1.5rem;
+        font-weight: 500;
+    }
+    
+    .btn-primary {
+        background-color: var(--primary-color);
+        border-color: var(--primary-color);
+    }
+    
+    .btn-primary:hover {
+        background-color: #303f9f;
+        border-color: #303f9f;
+    }
+    
+    .btn-success {
+        background-color: var(--success-color);
+        border-color: var(--success-color);
+    }
+    
+    .btn-danger {
+        background-color: var(--danger-color);
+        border-color: var(--danger-color);
+    }
+    
+    .footer {
+        background-color: var(--card-bg);
+        box-shadow: 0 -2px 4px rgba(0,0,0,0.05);
+        padding: 24px 0;
+        margin-top: auto;
+    }
+
+    .footer-content {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .footer-brand {
+        font-weight: 600;
+        color: var(--primary);
+        font-size: 1.25rem;
+        margin-bottom: 8px;
+    }
+
+    .footer-links a {
+        color: var(--text-secondary);
+        margin-left: 16px;
+        text-decoration: none;
+        transition: color 0.2s ease;
+    }
+
+    .footer-links a:hover {
+        color: var(--primary);
+    }
+
+    /* Sidebar improvements */
+    .sidebar {
+        background-color: var(--sidebar-color);
+        border-radius: 12px;
+        padding: 1rem;
+        height: 100%;
+    }
+    
+    /* Add some spacing in the main content */
+    .main-content {
+        padding: 0 15px;
+    }
+    
+    /* User dropdown styling */
+    .user-dropdown .dropdown-toggle {
+        display: flex;
+        align-items: center;
+        background-color: var(--primary-light);
+        border-radius: 30px;
+        padding: 8px 15px;
+    }
+    
+    .user-dropdown .dropdown-toggle:hover {
+        background-color: #d1d9ff;
+    }
+    
+    .user-avatar {
+        width: 32px;
+        height: 32px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background-color: var(--primary-color);
+        color: white;
+        font-weight: bold;
+        margin-right: 8px;
+    }
+
+    /* Sidebar dropdown styling */
+    .sidebar-dropdown .list-group-item {
+        border-radius: 8px !important;
+        transition: all 0.3s;
+    }
+
+    .sidebar-dropdown .list-group-item:hover {
+        background-color: var(--primary-light);
+        color: var(--primary-color);
+    }
+
+    .sidebar-dropdown .list-group {
+        border: none;
+        box-shadow: none;
+    }
+
+    .sidebar-dropdown .collapse .list-group-item {
+        border-left: 3px solid var(--primary-color);
+        margin-left: 10px;
+        border-top-left-radius: 0 !important;
+        border-bottom-left-radius: 0 !important;
+    }
+
+    /* Social links */
+    .social-links {
+        display: flex;
+        gap: 16px;
+        margin-top: 8px;
+    }
+
+    .social-links a {
+        color: var(--text-secondary);
+        font-size: 1.25rem;
+        transition: color 0.2s ease;
+    }
+
+    .social-links a:hover {
+        color: var(--primary-color);
+    }
+
+    /* Toast styling */
+    .toast {
+        box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        border: none;
+    }
+</style>
+</head>
+<body>
+    <!-- Header with Navbar -->
+    <header>
+        <nav class="navbar navbar-expand-lg navbar-light sticky-top">
+            <div class="container">
+                <a class="navbar-brand d-flex align-items-center" asp-controller="Employee" asp-action="Index" data-ajax="true" data-target="#main-content">
+                    <i class="bi bi-building"></i> HR Portal
+                </a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
+                        aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+             
+<div class="navbar-collapse collapse">
+    <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+        <!-- Remove Employees and Departments items for Admin users -->
+        @if (!User.IsInRole("Admin"))
+        {
+            <li class="nav-item dropdown">
+                <a class="nav-link dropdown-toggle" href="#" id="employeeDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                    <i class="bi bi-people me-1"></i> Employees
+                </a>
+                <ul class="dropdown-menu" aria-labelledby="employeeDropdown">
+                    <li>
+                        <a class="dropdown-item" asp-controller="Employee" asp-action="Index" data-ajax="true" data-target="#main-content">
+                            <i class="bi bi-list-ul me-2"></i> View All
+                        </a>
+                    </li>
+                </ul>
+            </li>
+            
+            @if (User.IsInRole("Manager"))
+            {
+                <li class="nav-item">
+                    <a class="nav-link" asp-controller="Employee" asp-action="ManagerDashboard" data-ajax="true" data-target="#main-content">
+                        <i class="bi bi-speedometer2 me-1"></i> Manager Dashboard
+                    </a>
+                </li>
+            }
+        }
+    </ul>
+
+    <ul class="navbar-nav ms-auto">
+        @if (User.Identity.IsAuthenticated)
+        {
+            var user = await UserManager.GetUserAsync(User);
+            <li class="nav-item dropdown user-dropdown">
+                <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                    <div class="user-avatar">
+                        @if (!string.IsNullOrEmpty(user?.ImagePath))
+                        {
+                            <img src="@user.ImagePath" style="width: 32px; height: 32px; border-radius: 50%; object-fit: cover;" alt="@user.FullName" />
+                        }
+                        else if (!string.IsNullOrEmpty(User.Identity.Name))
+                        {
+                            @User.Identity.Name.Substring(0, 1).ToUpper()
+                        }
+                        else
+                        {
+                            <i class="bi bi-person"></i>
+                        }
+                    </div>
+                    <span>@(user?.FullName ?? User.Identity.Name)</span>
+                </a>
+                <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
+                    <li>
+                        <a class="dropdown-item" asp-controller="Employee" asp-action="EmployeeDashboard" data-ajax="true" data-target="#main-content">
+                            <i class="bi bi-person-circle me-2"></i> My Profile
+                        </a>
+                    </li>
+                    @if (User.IsInRole("Admin"))
+                    {
+                        <li><hr class="dropdown-divider"></li>
+                    }
+                    <li>
+                        <form id="logoutForm" asp-controller="Auth" asp-action="Logout" method="post" class="form-inline">
+                            <button type="submit" class="dropdown-item">
+                                <i class="bi bi-box-arrow-right me-2"></i> Logout
+                            </button>
+                        </form>
+                    </li>
+                </ul>
+            </li>
+        }
+        else
+        {
+            <li class="nav-item">
+                <a class="nav-link btn btn-outline-primary" asp-controller="Auth" asp-action="Login">
+                    <i class="bi bi-box-arrow-in-right me-1"></i> Login
+                </a>
+            </li>
+        }
+    </ul>
+</div>  </div>
+        </nav>
+    </header>
+
+    <!-- Main Content with Sidebar -->
+    <div class="container py-4 flex-grow-1">
+        <div class="row g-4">
+            <!-- Sidebar -->
+            <div class="col-lg-3 col-md-4">
+               
+<div class="sidebar">
+    <h5 class="mb-3 text-muted fw-bold"><i class="bi bi-list me-2"></i>Quick Links</h5>
+    <div class="list-group">
+        @if (User.IsInRole("Admin"))
+        {
+            <!-- Employees Dropdown -->
+            <div class="sidebar-dropdown mb-2">
+                <button class="list-group-item list-group-item-action w-100 d-flex justify-content-between align-items-center" 
+                       data-bs-toggle="collapse" data-bs-target="#employeesDropdown" aria-expanded="false">
+                    <span><i class="bi bi-people me-2"></i> Employees</span>
+                    <i class="bi bi-chevron-down"></i>
+                </button>
+                <div class="collapse" id="employeesDropdown">
+                    <div class="list-group mt-1">
+                    <a asp-controller="Employee" asp-action="Index" 
+   class="list-group-item list-group-item-action ps-4 @(ViewContext.RouteData.Values["Controller"].ToString() == "Employee" && ViewContext.RouteData.Values["Action"].ToString() == "Index" ? "active" : "")" 
+   data-ajax="true" data-target="#main-content">
+    <i class="bi bi-list-ul me-2"></i> View All
+</a>
+                        <a asp-controller="Employee" asp-action="Create" 
+                           class="list-group-item list-group-item-action ps-4 @(ViewContext.RouteData.Values["Controller"].ToString() == "Employee" && ViewContext.RouteData.Values["Action"].ToString() == "Create" ? "active" : "")" 
+                           data-ajax="true" data-target="#main-content">
+                            <i class="bi bi-person-plus-fill me-2"></i> Add Employee
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Departments Dropdown -->
+            <div class="sidebar-dropdown mb-2">
+                <button class="list-group-item list-group-item-action w-100 d-flex justify-content-between align-items-center" 
+                       data-bs-toggle="collapse" data-bs-target="#departmentsDropdown" aria-expanded="false">
+                    <span><i class="bi bi-building me-2"></i> Departments</span>
+                    <i class="bi bi-chevron-down"></i>
+                </button>
+                <div class="collapse" id="departmentsDropdown">
+                    <div class="list-group mt-1">
+                        <a asp-controller="Department" asp-action="Index" 
+                           class="list-group-item list-group-item-action ps-4 @(ViewContext.RouteData.Values["Controller"].ToString() == "Department" && ViewContext.RouteData.Values["Action"].ToString() == "Index" ? "active" : "")" 
+                           data-ajax="true" data-target="#main-content">
+                            <i class="bi bi-list-ul me-2"></i> View All
+                        </a>
+                        <a asp-controller="Department" asp-action="Create" 
+                           class="list-group-item list-group-item-action ps-4 @(ViewContext.RouteData.Values["Controller"].ToString() == "Department" && ViewContext.RouteData.Values["Action"].ToString() == "Create" ? "active" : "")" 
+                           data-ajax="true" data-target="#main-content">
+                            <i class="bi bi-plus-circle me-2"></i> Add Department
+                        </a>
+                    </div>
+                </div>
+            </div>
+        }
+
+        @if (User.IsInRole("Manager"))
+        {
+            <a asp-controller="Employee" asp-action="ManagerDashboard" 
+               class="list-group-item list-group-item-action @(ViewContext.RouteData.Values["Controller"].ToString() == "Employee" && ViewContext.RouteData.Values["Action"].ToString() == "ManagerDashboard" ? "active" : "")" 
+               data-ajax="true" data-target="#main-content">
+                <i class="bi bi-speedometer2 me-2"></i> Manager Dashboard
+            </a>
+        }
+
+        @if (User.IsInRole("Employee") || User.IsInRole("Manager") || User.IsInRole("Admin"))
+        {
+            <a asp-controller="Employee" asp-action="EmployeeDashboard" 
+               class="list-group-item list-group-item-action @(ViewContext.RouteData.Values["Controller"].ToString() == "Employee" && ViewContext.RouteData.Values["Action"].ToString() == "EmployeeDashboard" ? "active" : "")" 
+               data-ajax="true" data-target="#main-content">
+                <i class="bi bi-person-workspace me-2"></i> My Dashboard
+            </a>
+        }
+    </div>
+</div>
+            </div>
+
+            <!-- Main Content Area -->
+            <div class="col-lg-9 col-md-8 main-content">
+                <div class="card mb-4">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <h4 class="mb-0">@ViewData["Title"]</h4>
+                         
+                    </div>
+                    <div class="card-body" id="main-content">
+                        @RenderBody()
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer mt-auto">
+        <div class="container">
+            <div class="footer-content">
+                <div>
+                    <div class="footer-brand">
+                        <i class="bi bi-building"></i> HR Management System
+                    </div>
+                    <p class="text-muted mb-0">&copy; 2025 - All Rights Reserved</p>
+                    <div class="social-links">
+                        <a href="#"><i class="bi bi-linkedin"></i></a>
+                        <a href="#"><i class="bi bi-twitter"></i></a>
+                        <a href="#"><i class="bi bi-facebook"></i></a>
+                        <a href="#"><i class="bi bi-instagram"></i></a>
+                    </div>
+                </div>
+                <div class="footer-links">
+                    <a asp-controller="Home" asp-action="Privacy">Privacy Policy</a>
+                    <a asp-controller="Home" asp-action="Terms">Terms of Service</a>
+                    <a asp-controller="Home" asp-action="Contact">Contact Us</a>
+                    <a asp-controller="Home" asp-action="About">About</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- AJAX Loading Indicator -->
+    <div id="ajax-loading" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.3); z-index: 9999;">
+        <div class="d-flex justify-content-center align-items-center h-100">
+            <div class="spinner-border text-primary" role="status" style="width: 3rem; height: 3rem;">
+                <span class="visually-hidden">Loading...</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Notifications -->
+    <div class="position-fixed bottom-0 end-0 p-3" style="z-index: 11">
+        <div id="successToast" class="toast" role="alert" aria-live="assertive" aria-atomic="true">
+            <div class="toast-header bg-success text-white">
+                <i class="bi bi-check-circle me-2"></i>
+                <strong class="me-auto">Success</strong>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="toast" aria-label="Close"></button>
+            </div>
+            <div class="toast-body" id="successToastBody">
+                Operation completed successfully.
+            </div>
+        </div>
+    </div>
+
+    <div class="position-fixed bottom-0 end-0 p-3" style="z-index: 11">
+        <div id="errorToast" class="toast" role="alert" aria-live="assertive" aria-atomic="true">
+            <div class="toast-header bg-danger text-white">
+                <i class="bi bi-exclamation-triangle me-2"></i>
+                <strong class="me-auto">Error</strong>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="toast" aria-label="Close"></button>
+            </div>
+            <div class="toast-body" id="errorToastBody">
+                An error occurred.
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
+    <script src="~/js/ajax-handler.js" asp-append-version="true"></script>
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Check if current page is within a dropdown section
+        var currentController = '@ViewContext.RouteData.Values["Controller"].ToString()';
+        var currentAction = '@ViewContext.RouteData.Values["Action"].ToString()';
+        
+        // Auto-expand Employees dropdown if on employee pages
+        if (currentController === 'Employee' && (currentAction === 'Index' || currentAction === 'Create')) {
+            document.getElementById('employeesDropdown').classList.add('show');
+        }
+        
+        // Auto-expand Departments dropdown if on department pages
+        if (currentController === 'Department' && (currentAction === 'Index' || currentAction === 'Create')) {
+            document.getElementById('departmentsDropdown').classList.add('show');
+        }
+    });
+</script>
+    
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

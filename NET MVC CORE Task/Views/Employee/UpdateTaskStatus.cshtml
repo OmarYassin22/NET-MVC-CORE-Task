@@ -1,0 +1,62 @@
+﻿@model ARIBApp.Core.Enum.TaskState
+@{
+    ViewData["Title"] = "Update Task Status";
+    Layout = "_EmployeeLayout";
+}
+
+<div class="container mt-4">
+    <div class="card">
+        <div class="card-header bg-primary text-white">
+            <h5><i class="bi bi-pencil-square"></i> Update Task Status</h5>
+        </div>
+        <div class="card-body">
+            <h6 class="mb-3">Task: @ViewBag.TaskTitle</h6>
+            <form asp-action="UpdateTaskStatus" method="post">
+                <input type="hidden" name="taskId" value="@ViewBag.TaskId" />
+
+                <div class="mb-3">
+                    <label class="form-label">Current Status</label>
+                    <div>
+                        @switch (ViewBag.CurrentStatus)
+                        {
+                            case ARIBApp.Core.Enum.TaskState.Pending:
+                                <span class="badge bg-warning">Pending</span>
+                                break;
+                            case ARIBApp.Core.Enum.TaskState.InProgress:
+                                <span class="badge bg-primary">In Progress</span>
+                                break;
+                            case ARIBApp.Core.Enum.TaskState.Completed:
+                                <span class="badge bg-success">Completed</span>
+                                break;
+                            case ARIBApp.Core.Enum.TaskState.Failed:
+                                <span class="badge bg-danger">Failed</span>
+                                break;
+                            case ARIBApp.Core.Enum.TaskState.Cancelled:
+                                <span class="badge bg-secondary">Cancelled</span>
+                                break;
+                            default:
+                                <span class="badge bg-secondary">Unknown</span>
+                                break;
+                        }
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <label for="newStatus" class="form-label">New Status</label>
+                    <select id="newStatus" name="newStatus" class="form-select" required>
+                        <option value="">-- Select New Status --</option>
+                        @foreach (var option in ViewBag.StatusOptions)
+                        {
+                            <option value="@option.Value">@option.Text</option>
+                        }
+                    </select>
+                </div>
+
+                <div class="mt-4">
+                    <button type="submit" class="btn btn-primary">Update Status</button>
+                    <a asp-action="EmployeeDashboard" class="btn btn-secondary">Cancel</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

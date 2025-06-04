@@ -1,0 +1,36 @@
+@page "{id:int}"
+@model EditModel
+@{
+    ViewData["Title"] = "Edit Employee";
+}
+<h2>Edit Employee</h2>
+<form method="post" enctype="multipart/form-data">
+    <input type="hidden" asp-for="Employee.Id" />
+    <div>
+        <label asp-for="Employee.FirstName"></label>
+        <input asp-for="Employee.FirstName" />
+        <span asp-validation-for="Employee.FirstName"></span>
+    </div>
+    <div>
+        <label asp-for="Employee.LastName"></label>
+        <input asp-for="Employee.LastName" />
+        <span asp-validation-for="Employee.LastName"></span>
+    </div>
+    <div>
+        <label asp-for="Employee.Salary"></label>
+        <input asp-for="Employee.Salary" type="number" />
+        <span asp-validation-for="Employee.Salary"></span>
+    </div>
+    <div>
+        <label asp-for="Employee.ManagerId"></label>
+        <input asp-for="Employee.ManagerId" type="number" />
+        <span asp-validation-for="Employee.ManagerId"></span>
+    </div>
+    <div>
+        <label asp-for="ImageFile">Image</label>
+        <input asp-for="ImageFile" type="file" />
+        <span asp-validation-for="ImageFile"></span>
+    </div>
+    <button type="submit">Save</button>
+    <a asp-page="Index">Cancel</a>
+</form>

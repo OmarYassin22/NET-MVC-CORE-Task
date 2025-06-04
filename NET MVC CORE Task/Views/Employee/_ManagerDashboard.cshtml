@@ -1,0 +1,204 @@
+﻿@model IEnumerable<ARIBApp.Core.Contracts.EmployeeDTO>
+@using ARIBApp.Core.Enum
+
+<div class="manager-dashboard">
+    <div class="row mb-4">
+        <div class="col-md-12">
+            <div class="card bg-primary text-white">
+                <div class="card-body">
+                    <h5 class="card-title"><i class="bi bi-people-fill me-2"></i>Team Overview</h5>
+                    <p class="card-text">You are managing @Model.Count() team members</p>
+                    <div class="progress bg-primary-light" style="height: 8px;">
+                        <div class="progress-bar bg-white" role="progressbar" style="width: 100%;" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row mb-4">
+        <div class="col-md-4">
+            <div class="card bg-warning text-white">
+                <div class="card-body">
+                    <h5 class="card-title"><i class="bi bi-hourglass me-2"></i>Pending Tasks</h5>
+                    <p class="display-4">@Model.Sum(e => e.Tasks.Count(t => t.Status == TaskState.Pending))</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card bg-info text-white">
+                <div class="card-body">
+                    <h5 class="card-title"><i class="bi bi-arrow-repeat me-2"></i>In Progress</h5>
+                    <p class="display-4">@Model.Sum(e => e.Tasks.Count(t => t.Status == TaskState.InProgress))</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card bg-success text-white">
+                <div class="card-body">
+                    <h5 class="card-title"><i class="bi bi-check-circle me-2"></i>Completed</h5>
+                    <p class="display-4">@Model.Sum(e => e.Tasks.Count(t => t.Status == TaskState.Completed))</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-header bg-light">
+                    <h5 class="mb-0"><i class="bi bi-people me-2"></i>Team Members</h5>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th>Employee</th>
+                                    <th>Department</th>
+                                    <th>Tasks</th>
+                                    <th>Task Status</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var employee in Model)
+                                {
+                                    <tr>
+                                        <td>
+                                            <div class="d-flex align-items-center">
+                                                @if (!string.IsNullOrEmpty(employee.ImagePath))
+                                                {
+                                                    <img src="@employee.ImagePath" class="rounded-circle me-2" width="40" height="40" alt="@employee.FullName" style="object-fit: cover;">
+                                                }
+                                                else
+                                                {
+                                                    <div class="avatar bg-primary text-white rounded-circle me-2 d-flex align-items-center justify-content-center" style="width:40px;height:40px;">
+                                                        @employee.FirstName.Substring(0, 1)@employee.LastName.Substring(0, 1)
+                                                    </div>
+                                                }
+                                                <span>@employee.FullName</span>
+                                            </div>
+                                        </td>
+                                        <td>@employee.Department?.Name</td>
+                                        <td>@employee.Tasks.Count</td>
+                                        <td>
+                                            <div class="d-flex">
+                                                <span class="badge bg-warning me-1">@employee.Tasks.Count(t => t.Status == TaskState.Pending)</span>
+                                                <span class="badge bg-primary me-1">@employee.Tasks.Count(t => t.Status == TaskState.InProgress)</span>
+                                                <span class="badge bg-success">@employee.Tasks.Count(t => t.Status == TaskState.Completed)</span>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <div class="btn-group">
+                                                <a asp-action="Details" asp-route-id="@employee.Id" class="btn btn-sm btn-info" data-ajax="true" data-target="#main-content">
+                                                    <i class="bi bi-info-circle"></i>
+                                                </a>
+                                                <a asp-controller="Task" asp-action="EmployeeTasks" asp-route-employeeId="@employee.Id" class="btn btn-sm btn-primary" data-ajax="true" data-target="#main-content">
+                                                    <i class="bi bi-list-check"></i>
+                                                </a>
+                                                <a asp-controller="Task" asp-action="Create" asp-route-employeeId="@employee.Id" class="btn btn-sm btn-success" data-ajax="true" data-target="#main-content">
+                                                    <i class="bi bi-plus-circle"></i>
+                                                </a>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row mt-4">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-header bg-light">
+                    <h5 class="mb-0"><i class="bi bi-bar-chart-line me-2"></i>Task Breakdown</h5>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-sm">
+                            <thead>
+                                <tr>
+                                    <th>Status</th>
+                                    <th>Count</th>
+                                    <th>Percentage</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @{
+                                    var totalTasks = Model.Sum(e => e.Tasks.Count);
+                                    var pendingTasks = Model.Sum(e => e.Tasks.Count(t => t.Status == TaskState.Pending));
+                                    var inProgressTasks = Model.Sum(e => e.Tasks.Count(t => t.Status == TaskState.InProgress));
+                                    var completedTasks = Model.Sum(e => e.Tasks.Count(t => t.Status == TaskState.Completed));
+                                    var failedTasks = Model.Sum(e => e.Tasks.Count(t => t.Status == TaskState.Failed));
+                                    var cancelledTasks = Model.Sum(e => e.Tasks.Count(t => t.Status == TaskState.Cancelled));
+
+                                     string GetPercentage(int count) => totalTasks > 0 ? $"{(count * 100.0 / totalTasks):F1}%" : "0%";
+                                }
+                                <tr>
+                                    <td><span class="badge bg-warning">Pending</span></td>
+                                    <td>@pendingTasks</td>
+                                    <td>
+                                        <div class="progress" style="height: 10px;">
+                                            <div class="progress-bar bg-warning" role="progressbar" style="width: @GetPercentage(pendingTasks);" aria-valuenow="@pendingTasks" aria-valuemin="0" aria-valuemax="@totalTasks">@GetPercentage(pendingTasks)</div>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td><span class="badge bg-primary">In Progress</span></td>
+                                    <td>@inProgressTasks</td>
+                                    <td>
+                                        <div class="progress" style="height: 10px;">
+                                            <div class="progress-bar bg-primary" role="progressbar" style="width: @GetPercentage(inProgressTasks);" aria-valuenow="@inProgressTasks" aria-valuemin="0" aria-valuemax="@totalTasks">@GetPercentage(inProgressTasks)</div>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td><span class="badge bg-success">Completed</span></td>
+                                    <td>@completedTasks</td>
+                                    <td>
+                                        <div class="progress" style="height: 10px;">
+                                            <div class="progress-bar bg-success" role="progressbar" style="width: @GetPercentage(completedTasks);" aria-valuenow="@completedTasks" aria-valuemin="0" aria-valuemax="@totalTasks">@GetPercentage(completedTasks)</div>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td><span class="badge bg-danger">Failed</span></td>
+                                    <td>@failedTasks</td>
+                                    <td>
+                                        <div class="progress" style="height: 10px;">
+                                            <div class="progress-bar bg-danger" role="progressbar" style="width: @GetPercentage(failedTasks);" aria-valuenow="@failedTasks" aria-valuemin="0" aria-valuemax="@totalTasks">@GetPercentage(failedTasks)</div>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td><span class="badge bg-secondary">Cancelled</span></td>
+                                    <td>@cancelledTasks</td>
+                                    <td>
+                                        <div class="progress" style="height: 10px;">
+                                            <div class="progress-bar bg-secondary" role="progressbar" style="width: @GetPercentage(cancelledTasks);" aria-valuenow="@cancelledTasks" aria-valuemin="0" aria-valuemax="@totalTasks">@GetPercentage(cancelledTasks)</div>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+     document.addEventListener('DOMContentLoaded', function() {
+         const refreshInterval = 60 * 1000; // 60 seconds
+
+        setInterval(function() {
+            AjaxHandler.loadContent('@Url.Action("ManagerDashboard")', '#main-content', {}, false);
+        }, refreshInterval);
+    });
+</script>

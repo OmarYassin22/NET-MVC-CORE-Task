@@ -1,0 +1,65 @@
+﻿@model IEnumerable<ARIBApp.Core.Contracts.DepartmentDTO>
+
+<div class="row mb-4">
+    <div class="col-md-6">
+        <form id="searchForm" class="d-flex" method="get">
+            <input type="text" name="searchTerm" class="form-control me-2" placeholder="Search departments..." value="@ViewBag.SearchTerm">
+            <button type="submit" class="btn btn-primary">
+                <i class="bi bi-search"></i>
+            </button>
+        </form>
+    </div>
+    <div class="col-md-6 text-end">
+        <a asp-action="Create" class="btn btn-success" data-ajax="true" data-target="#main-content">
+            <i class="bi bi-plus-circle me-1"></i> Add Department
+        </a>
+    </div>
+</div>
+
+<div id="departments-list">
+    @await Html.PartialAsync("_DepartmentsList", Model)
+</div>
+
+<script>
+     document.getElementById('searchForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+        const searchTerm = this.querySelector('input[name="searchTerm"]').value;
+
+         const loadingIndicator = document.getElementById('ajax-loading');
+        if (loadingIndicator) loadingIndicator.style.display = 'block';
+
+         const url = '@Url.Action("Index")' + (searchTerm ? `?searchTerm=${encodeURIComponent(searchTerm)}` : '');
+
+         fetch(url, {
+            method: 'GET',
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest'
+            }
+        })
+        .then(response => response.text())
+        .then(html => {
+             document.getElementById('main-content').innerHTML = html;
+
+             const searchInput = document.querySelector('#searchForm input[name="searchTerm"]');
+            if (searchInput) {
+                searchInput.value = searchTerm;
+            }
+
+             if (loadingIndicator) loadingIndicator.style.display = 'none';
+        })
+        .catch(error => {
+            console.error('Search error:', error);
+
+             if (loadingIndicator) loadingIndicator.style.display = 'none';
+
+             const errorToastBody = document.getElementById('errorToastBody');
+            if (errorToastBody) {
+                errorToastBody.textContent = "An error occurred while searching departments.";
+                const errorToast = new bootstrap.Toast(document.getElementById('errorToast'));
+                errorToast.show();
+            } else {
+                alert("An error occurred while searching departments.");
+            }
+        });
+    });
+</script>

@@ -1,0 +1,17 @@
+﻿global using ARIBApp.Core.Enum;
+global using ARIBApp.Core.Interfaces;
+global using ARIBApp.Core.Interfaces.Resositories;
+global using ARIBApp.Core.Interfaces.Services;
+global using ARIBApp.Core.Persistence;
+global using ARIBApp.Data.Model;
+global using ARIBApp.Infrastructure.Implementaions;
+global using ARIBApp.Infrastructure.Implementaions.Repositories;
+global using ARIBApp.Infrastructure.Validators;
+global using ARIBApp.Services.Helper;
+global using ARIBApp.Services.implementation;
+global using ARIBApp.Services.implementation.Services;
+global using FluentValidation;
+global using FluentValidation.AspNetCore;
+global using Mapster;
+global using Microsoft.AspNetCore.Identity;
+global using Microsoft.EntityFrameworkCore;

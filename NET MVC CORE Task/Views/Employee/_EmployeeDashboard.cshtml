@@ -1,0 +1,163 @@
+﻿@model ARIBApp.Core.Contracts.EmployeeDTO
+@using ARIBApp.Core.Enum
+
+<div class="employee-dashboard">
+    <div class="row mb-4">
+        @if (TempData["SuccessMessage"] != null)
+        {
+            <div class="col-12">
+                <div class="alert alert-success alert-dismissible fade show" role="alert">
+                    <i class="bi bi-check-circle-fill me-2"></i>
+                    @TempData["SuccessMessage"]
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            </div>
+        }
+
+        @if (TempData["ErrorMessage"] != null)
+        {
+            <div class="col-12">
+                <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                    <i class="bi bi-exclamation-triangle-fill me-2"></i>
+                    @TempData["ErrorMessage"]
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            </div>
+        }
+
+        <div class="col-md-6">
+            <div class="card bg-primary text-white">
+                <div class="card-body">
+                    <div class="d-flex align-items-center">
+                        @if (!string.IsNullOrEmpty(Model.ImagePath))
+                        {
+                            <img src="@Model.ImagePath" class="rounded-circle me-3" width="64" height="64" alt="@Model.FullName" style="object-fit: cover;">
+                        }
+                        else
+                        {
+                            <div class="avatar bg-white text-primary rounded-circle me-3 d-flex align-items-center justify-content-center" style="width:64px;height:64px; font-size: 24px;">
+                                @Model.FirstName.Substring(0, 1)@Model.LastName.Substring(0, 1)
+                            </div>
+                        }
+                        <div>
+                            <h5 class="card-title mb-0">Welcome, @Model.FirstName!</h5>
+                            <p class="card-text">@Model.Department?.Name Department</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="card bg-info text-white">
+                <div class="card-body">
+                    <h5 class="card-title"><i class="bi bi-list-check me-2"></i>My Tasks</h5>
+                    <p class="card-text">You have @(Model.Tasks?.Count ?? 0) assigned tasks</p>
+                    <div class="d-flex justify-content-between">
+                        <span><i class="bi bi-hourglass me-1"></i> Pending: @(Model.Tasks?.Count(t => t.Status == TaskState.Pending) ?? 0)</span>
+                        <span><i class="bi bi-arrow-repeat me-1"></i> In Progress: @(Model.Tasks?.Count(t => t.Status == TaskState.InProgress) ?? 0)</span>
+                        <span><i class="bi bi-check-circle me-1"></i> Completed: @(Model.Tasks?.Count(t => t.Status == TaskState.Completed) ?? 0)</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-header bg-light">
+                    <h5 class="mb-0"><i class="bi bi-list-check me-2"></i>My Tasks</h5>
+                </div>
+                <div class="card-body">
+                    @if (Model.Tasks == null || !Model.Tasks.Any())
+                    {
+                        <div class="alert alert-info">
+                            <i class="bi bi-info-circle me-2"></i> You don't have any tasks assigned yet.
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="table-responsive">
+                            <table class="table table-striped">
+                                <thead>
+                                    <tr>
+                                        <th>Title</th>
+                                        <th>Description</th>
+                                        <th>Status</th>
+                                        <th>Created</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var task in Model.Tasks)
+                                    {
+                                        <tr>
+                                            <td>@task.Title</td>
+                                            <td>@(task.Description?.Length > 50 ? task.Description.Substring(0, 47) + "..." : task.Description)</td>
+                                            <td>
+                                                @switch (task.Status)
+                                                {
+                                                    case TaskState.Pending:
+                                                        <span class="badge bg-warning">Pending</span>
+                                                        break;
+                                                    case TaskState.InProgress:
+                                                        <span class="badge bg-primary">In Progress</span>
+                                                        break;
+                                                    case TaskState.Completed:
+                                                        <span class="badge bg-success">Completed</span>
+                                                        break;
+                                                    case TaskState.Failed:
+                                                        <span class="badge bg-danger">Failed</span>
+                                                        break;
+                                                    case TaskState.Cancelled:
+                                                        <span class="badge bg-secondary">Cancelled</span>
+                                                        break;
+                                                    default:
+                                                        <span class="badge bg-secondary">Unknown</span>
+                                                        break;
+                                                }
+                                            </td>
+                                            <td>@task.CreatedAt.ToString("MMM dd, yyyy")</td>
+                                            <td>
+                                                @if (task.Status == TaskState.Pending || task.Status == TaskState.InProgress)
+                                                {
+                                                    <a asp-action="UpdateTaskStatus" asp-route-taskId="@task.Id" class="btn btn-sm btn-primary" data-ajax="true" data-target="#main-content">
+                                                        <i class="bi bi-arrow-up-circle me-1"></i> Update Status
+                                                    </a>
+                                                }
+                                            </td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row mt-4">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-header bg-light">
+                    <h5 class="mb-0"><i class="bi bi-person-lines-fill me-2"></i>My Information</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <p><strong>Name:</strong> @Model.FullName</p>
+                            <p><strong>Email:</strong> @Model.Email</p>
+                            <p><strong>Department:</strong> @Model.Department?.Name</p>
+                        </div>
+                        <div class="col-md-6">
+                            <p><strong>Manager:</strong> @(Model.Manager?.FullName ?? "None")</p>
+                            <p><strong>Username:</strong> @Model.UserName</p>
+                            <p><strong>Salary:</strong> $@Model.Salary.ToString("N2")</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,14 @@
+﻿@model ARIBApp.Core.Contracts.TaskDTO
+@{
+    ViewData["Title"] = $"Edit Task for {ViewBag.Employee.FullName}";
+    Layout = "_EmployeeLayout";
+}
+
+<div class="card">
+    <div class="card-header">
+        <h5 class="mb-0"><i class="bi bi-pencil me-2"></i>Edit Task</h5>
+    </div>
+    <div class="card-body">
+        @await Html.PartialAsync("_EditTaskForm", Model)
+    </div>
+</div>

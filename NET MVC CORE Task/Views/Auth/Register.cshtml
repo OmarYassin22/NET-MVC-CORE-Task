@@ -1,0 +1,17 @@
+﻿ @{
+    ViewData["Title"] = "Register User";
+}
+<h2>Register New User</h2>
+<form asp-action="Register" method="post">
+    <input type="email" name="email" placeholder="Email" required />
+    <input type="password" name="password" placeholder="Password" required />
+    <select name="role">
+        <option value="Admin">Admin</option>
+        <option value="User">User</option>
+    </select>
+    <button type="submit">Register</button>
+</form>
+@foreach (var error in ViewData.ModelState.Values.SelectMany(v => v.Errors))
+{
+    <div>@error.ErrorMessage</div>
+}
