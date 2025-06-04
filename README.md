@@ -1,4 +1,6 @@
 # ARIB Employee Management System
+ 
+[Live Demo](http://hrmangement.runasp.net/)
 
 ## Overview
 ARIB Employee Management System is an ASP.NET Core 9.0 web application built with Razor Pages that allows organizations to manage employees, departments, and tasks. The application is built on a robust layered architecture to support scalability, maintainability, and separation of concerns.
