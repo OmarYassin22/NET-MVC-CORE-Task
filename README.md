@@ -1,9 +1,9 @@
 # ARIB Employee Management System
- 
+
 [Live Demo](http://hrmangement.runasp.net/)
 
 ## Overview
-ARIB Employee Management System is an ASP.NET Core 9.0 web application built with Razor Pages that allows organizations to manage employees, departments, and tasks. The application is built on a robust layered architecture to support scalability, maintainability, and separation of concerns.
+ARIB Employee Management System is an ASP.NET Core 9.0 web application built with Razor Pages that allows organizations to manage employees, departments, and tasks. The application is built on a robust, layered architecture.
 
 ## Features
 - **User Authentication**: Secure login system with role-based authorization (Admin, Manager, Employee)
@@ -13,6 +13,7 @@ ARIB Employee Management System is an ASP.NET Core 9.0 web application built wit
 - **Responsive UI**: Modern user interface with responsive design
 
 ## Architecture
+
 The application follows a layered architecture pattern which provides several key benefits:
 
 - **Separation of Concerns**: Each layer has a specific responsibility, making the codebase easier to understand and maintain
@@ -63,4 +64,18 @@ The application follows a layered architecture pattern which provides several ke
   - Sample employees and managers
   - Demo tasks
 
-Simply update the connection string in `appsettings.json` and run the application:
+Simply update the connection string in `appsettings.json` and run the application.
+
+---
+
+## Default Users for Testing
+
+| Username    | Password   | Role     | Department               |
+|-------------|------------|----------|--------------------------|
+| admin       | Admin@123  | Admin    |                          |
+| hrmanager   | Hr@123     | Manager  | HR                       |
+| itmanager   | It@123     | Manager  | IT                       |
+| emp1        | Emp1@123   | Employee |                          |
+| emp2        | Emp2@123   | Employee |                          |
+
+- Managers are assigned to different departments: hrmanager → HR, itmanager → IT.
